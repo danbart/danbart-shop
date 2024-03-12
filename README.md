@@ -10,3 +10,4 @@
 4. Llene las variables de entorno con las credenciales de su base de datos
 5. Levantar la base de datos con el comando `docker-compose up -d`
 6. Levantar el servidor con el comando `yarn start:dev`
+7. Ejecutar SEED con `http://localhost:3000/seed`
