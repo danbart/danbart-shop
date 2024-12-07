@@ -1,34 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { IncomingHttpHeaders } from 'http';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { GestUser, RawHeaders } from './decorators/';
+import { CreateAuthDto, LoginAuthDto } from './dto';
+import { User } from './entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
+  @Post('register')
+  createUser(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.create(createAuthDto);
+
+  }
+  @Post('login')
+  loginUser(@Body() loginAuthDto: LoginAuthDto) {
+    return this.authService.login(loginAuthDto);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Get('private')
+  @UseGuards(AuthGuard())
+  getPrivateData(
+    // @Req() req: Express.Request
+    @GestUser() user: User,
+    @GestUser('email') userEmail: string,
+    @RawHeaders() token: string[],
+    @Headers() headers: IncomingHttpHeaders
+  ) {
+    // console.log({ user: req.user });
+    return {
+      message: "This is a private route",
+      user,
+      userEmail,
+      token,
+      headers
+    };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
-  }
 }
