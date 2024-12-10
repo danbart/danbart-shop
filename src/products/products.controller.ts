@@ -10,11 +10,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Auth } from '../auth/decorators';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
+@Auth()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
